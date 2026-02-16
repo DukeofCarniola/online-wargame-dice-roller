@@ -1,0 +1,5 @@
+{
+  "name": "Wargame Tactician: Dice Command",
+  "description": "A high-performance dice roller designed for tabletop wargamers. Manage multiple dice pools, set success thresholds, and get AI-powered tactical summaries of your rolls.",
+  "requestFramePermissions": []
+}
