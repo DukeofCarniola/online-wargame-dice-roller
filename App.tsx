@@ -228,6 +228,13 @@ const App: React.FC = () => {
       return { ...p, entries: updatedEntries };
     }));
   };
+  const updateBagDefinition = (poolId: string, color: string, qty: number) => {
+    setPools(prev => prev.map(p => {
+      if (p.id !== poolId) return p;
+      const newDef = { ...p.bagDefinition, [color]: Math.max(0, qty) };
+      return { ...p, bagDefinition: newDef };
+    }));
+  };
 
   const addCustomDie = () => {
     const newDie: CustomDieDefinition = {
@@ -442,6 +449,33 @@ const App: React.FC = () => {
                     <button onClick={() => deletePool(pool.id)} className="text-slate-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 ml-1 transition-opacity"><Trash2 className="w-4 h-4" /></button>
                   </div>
 
+                  {pool.mode === PoolMode.BLIND_BAG && (
+                    <div className="mb-3 p-2.5 bg-slate-950/50 rounded-lg border border-purple-900/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-[9px] font-black uppercase text-purple-400 tracking-widest">Logistic Bag Contents</label>
+                        <span className="text-[9px] font-mono text-slate-500">{Object.values(pool.bagDefinition).reduce((a, b) => a + b, 0)} Dice Total</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {pool.availableColors.map(color => (
+                          <div key={color} className="flex items-center bg-slate-900 rounded border border-slate-800 overflow-hidden">
+                            <div className="w-3 h-full" style={{ backgroundColor: color }} />
+                            <input
+                              type="number"
+                              min="0"
+                              value={pool.bagDefinition[color] || 0}
+                              onChange={(e) => updateBagDefinition(pool.id, color, parseInt(e.target.value) || 0)}
+                              className="w-8 bg-transparent text-[10px] font-bold text-center text-slate-300 outline-none p-1"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-2 flex justify-between items-center">
+                        <span className="text-[9px] text-slate-600 uppercase font-bold">Current Status: <span className="text-slate-300">{pool.currentBag.length} left</span></span>
+                        <button onClick={() => resetBag(pool.id)} className="text-[9px] bg-purple-900/40 hover:bg-purple-800/40 text-purple-300 border border-purple-800/50 px-2 py-1 rounded uppercase font-black transition-colors">Resupply Bag</button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-3">
                     {pool.entries.map((entry) => {
                       const isCustom = typeof entry.diceType === 'string' && !STANDARD_DICE_TYPES.includes(entry.diceType);
@@ -587,7 +621,16 @@ const App: React.FC = () => {
                     <div className="p-5 border-b-2 border-slate-800/50 bg-slate-950/20 flex items-center justify-between gap-5">
                       <div className="flex-1 min-w-0">
                         <input value={pool.name} onChange={(e) => updatePool(pool.id, { name: e.target.value })} className="bg-transparent font-black text-xl text-slate-100 outline-none w-full uppercase truncate focus:text-blue-400 transition-colors" />
-                        <div className="mt-2.5 flex gap-2.5"><span className="bg-blue-600/10 text-blue-400 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-blue-600/20 shadow-sm">CMP: {pool.entries.length}</span></div>
+                        <div className="mt-2.5 flex gap-2.5">
+                          {pool.mode === PoolMode.BLIND_BAG ? (
+                            <span className="bg-purple-600/10 text-purple-400 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-purple-600/20 shadow-sm flex items-center gap-2">
+                              <PackageOpen className="w-3 h-3" />
+                              Bag: {pool.currentBag.length} / {Object.values(pool.bagDefinition).reduce((a, b) => a + b, 0)}
+                            </span>
+                          ) : (
+                            <span className="bg-blue-600/10 text-blue-400 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-blue-600/20 shadow-sm">CMP: {pool.entries.length}</span>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center gap-5 shrink-0">
                         <div className="text-right">
@@ -620,6 +663,11 @@ const App: React.FC = () => {
                         </div>
                         <div className="flex gap-4 items-center">
                           {pool.mode === PoolMode.BLIND_BAG && <button onClick={() => resetBag(pool.id)} className="text-purple-400 hover:text-purple-300 uppercase flex items-center gap-2 transition-colors"><RotateCcw className="w-3.5 h-3.5" /> Refill</button>}
+                          {pool.mode === PoolMode.BLIND_BAG && (
+                            <div className="flex items-center gap-1 text-purple-500/50">
+                              <span className="h-4 w-px bg-purple-800/50 block"></span>
+                            </div>
+                          )}
                           <button onClick={() => togglePoolHistory(pool.id)} className="hover:text-white flex items-center gap-2.5 transition-colors">Logs ({pool.history.length}) {isHistCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}</button>
                         </div>
                       </div>
