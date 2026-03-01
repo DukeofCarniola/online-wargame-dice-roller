@@ -1,17 +1,17 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { 
-  Plus, 
-  Trash2, 
-  RotateCcw, 
-  Dices, 
-  RefreshCw, 
+import {
+  Plus,
+  Trash2,
+  RotateCcw,
+  Dices,
+  RefreshCw,
   LayoutGrid,
   Menu,
   ChevronLeft,
   ChevronDown,
   ChevronUp,
-  History, 
+  History,
   Clock,
   Eraser,
   PackageOpen,
@@ -23,21 +23,21 @@ import {
   Save,
   Zap
 } from 'lucide-react';
-import { DiceType, ThresholdType, PoolMode, DicePool, RollResult, RollEvent, CustomDieDefinition, CustomDieSide, DiceEntry } from './types.ts';
-import DiceIcon from './components/DiceIcon.tsx';
+import { DiceType, ThresholdType, PoolMode, DicePool, RollResult, RollEvent, CustomDieDefinition, CustomDieSide, DiceEntry } from './types';
+import DiceIcon from './components/DiceIcon';
 
 const generateId = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     try {
       return crypto.randomUUID();
-    } catch (e) {}
+    } catch (e) { }
   }
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 };
 
 const PRESET_COLORS = [
-  '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', 
-  '#f97316', '#06b6d4', '#ec4899', '#f1f5f9', '#475569'  
+  '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7',
+  '#f97316', '#06b6d4', '#ec4899', '#f1f5f9', '#475569'
 ];
 
 const STANDARD_DICE_TYPES = ['2', '4', '6', '8', '10', '12', '20'];
@@ -49,7 +49,7 @@ const App: React.FC = () => {
   const [pools, setPools] = useState<DicePool[]>([]);
   const [customDice, setCustomDice] = useState<CustomDieDefinition[]>([]);
   const [editingCustomDieId, setEditingCustomDieId] = useState<string | null>(null);
-  
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(320);
   const [isResizing, setIsResizing] = useState(false);
@@ -64,10 +64,10 @@ const App: React.FC = () => {
     const savedPools = localStorage.getItem('tactician_pools');
     const savedCustom = localStorage.getItem('tactician_custom_dice');
     const savedWidth = localStorage.getItem('tactician_sidebar_width');
-    
+
     if (savedCustom) setCustomDice(JSON.parse(savedCustom));
     if (savedWidth) setSidebarWidth(parseInt(savedWidth));
-    
+
     if (savedPools) {
       try {
         const rawPools = JSON.parse(savedPools);
@@ -220,7 +220,7 @@ const App: React.FC = () => {
         if (e.id !== entryId) return e;
         const valStr = value.toString().trim().toUpperCase();
         const exists = e.targetValues.some(v => v.toString().trim().toUpperCase() === valStr);
-        const newTargets = exists 
+        const newTargets = exists
           ? e.targetValues.filter(v => v.toString().trim().toUpperCase() !== valStr)
           : [...e.targetValues, value];
         return { ...e, targetValues: newTargets };
@@ -254,20 +254,20 @@ const App: React.FC = () => {
   };
 
   const updateSideContent = (dieId: string, sideId: string, content: string) => {
-    setCustomDice(prev => prev.map(d => d.id === dieId ? { 
-      ...d, sides: d.sides.map(s => s.id === sideId ? { ...s, content } : s) 
+    setCustomDice(prev => prev.map(d => d.id === dieId ? {
+      ...d, sides: d.sides.map(s => s.id === sideId ? { ...s, content } : s)
     } : d));
   };
 
   const addSideToDie = (dieId: string) => {
-    setCustomDice(prev => prev.map(d => d.id === dieId ? { 
-      ...d, sides: [...d.sides, { id: generateId(), content: (d.sides.length + 1).toString() }] 
+    setCustomDice(prev => prev.map(d => d.id === dieId ? {
+      ...d, sides: [...d.sides, { id: generateId(), content: (d.sides.length + 1).toString() }]
     } : d));
   };
 
   const removeSideFromDie = (dieId: string, sideId: string) => {
-    setCustomDice(prev => prev.map(d => (d.id === dieId && d.sides.length > 1) ? { 
-      ...d, sides: d.sides.filter(s => s.id !== sideId) 
+    setCustomDice(prev => prev.map(d => (d.id === dieId && d.sides.length > 1) ? {
+      ...d, sides: d.sides.filter(s => s.id !== sideId)
     } : d));
   };
 
@@ -293,7 +293,7 @@ const App: React.FC = () => {
   const calculateIsSuccess = (value: string | number, entry: DiceEntry) => {
     if (entry.thresholdType === ThresholdType.NONE) return undefined;
     const valStr = value.toString().trim().toUpperCase();
-    
+
     if (entry.thresholdType === ThresholdType.MATCH_ANY) {
       return entry.targetValues.some(v => v.toString().trim().toUpperCase() === valStr);
     } else {
@@ -324,7 +324,7 @@ const App: React.FC = () => {
             let value: number | string;
             if (customDie) {
               const sideIdx = Math.floor(Math.random() * customDie.sides.length);
-              value = customDie.sides[sideIdx].content; 
+              value = customDie.sides[sideIdx].content;
             } else {
               const diceSides = typeof entry.diceType === 'number' ? entry.diceType : parseInt(entry.diceType as string);
               value = Math.floor(Math.random() * (isNaN(diceSides) ? 6 : diceSides)) + 1;
@@ -343,7 +343,7 @@ const App: React.FC = () => {
           const colorIdx = Math.floor(Math.random() * workingBag.length);
           const color = workingBag[colorIdx];
           workingBag.splice(colorIdx, 1);
-          
+
           let value: number | string;
           if (customDie) {
             value = customDie.sides[Math.floor(Math.random() * customDie.sides.length)].content;
@@ -395,7 +395,7 @@ const App: React.FC = () => {
   return (
     <div className={`flex h-screen overflow-hidden bg-[#0a0f1d] text-slate-200 ${isResizing ? 'resizing' : ''}`}>
       {/* Sidebar - Control Tower */}
-      <aside 
+      <aside
         style={{ width: isSidebarOpen ? `${sidebarWidth}px` : '0px' }}
         className={`relative transition-[width] duration-300 border-r border-slate-800 bg-slate-900/40 flex flex-col overflow-visible ${!isSidebarOpen && 'opacity-0'}`}
       >
@@ -437,25 +437,25 @@ const App: React.FC = () => {
             <div className="space-y-4">
               {pools.map(pool => (
                 <div key={pool.id} className={`p-3 bg-slate-800/40 border rounded-xl group transition-all ${pool.mode === PoolMode.BLIND_BAG ? 'border-purple-900/40' : 'border-slate-800 hover:border-slate-700 shadow-lg'}`}>
-                   <div className="flex items-center justify-between mb-3">
-                    <input type="text" value={pool.name} onChange={(e) => updatePool(pool.id, { name: e.target.value })} className="bg-transparent text-[11px] font-black text-slate-100 outline-none w-full focus:text-blue-400 uppercase tracking-tight"/>
+                  <div className="flex items-center justify-between mb-3">
+                    <input type="text" value={pool.name} onChange={(e) => updatePool(pool.id, { name: e.target.value })} className="bg-transparent text-[11px] font-black text-slate-100 outline-none w-full focus:text-blue-400 uppercase tracking-tight" />
                     <button onClick={() => deletePool(pool.id)} className="text-slate-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 ml-1 transition-opacity"><Trash2 className="w-4 h-4" /></button>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {pool.entries.map((entry) => {
                       const isCustom = typeof entry.diceType === 'string' && !STANDARD_DICE_TYPES.includes(entry.diceType);
                       return (
                         <div key={entry.id} className="p-2.5 bg-slate-950 rounded-lg border border-slate-700/50 flex flex-col gap-2.5 shadow-inner transition-colors hover:border-slate-600">
                           <div className="flex items-center gap-2">
-                            <input type="number" min="1" value={entry.count} onChange={(e) => updateDiceEntry(pool.id, entry.id, { count: parseInt(e.target.value) || 1 })} className="w-10 bg-slate-900 border border-slate-800 rounded p-1 text-[11px] text-slate-300 outline-none font-bold text-center"/>
-                            <select 
-                              value={entry.diceType} 
-                              onChange={(e) => { 
-                                const val = e.target.value; 
+                            <input type="number" min="1" value={entry.count} onChange={(e) => updateDiceEntry(pool.id, entry.id, { count: parseInt(e.target.value) || 1 })} className="w-10 bg-slate-900 border border-slate-800 rounded p-1 text-[11px] text-slate-300 outline-none font-bold text-center" />
+                            <select
+                              value={entry.diceType}
+                              onChange={(e) => {
+                                const val = e.target.value;
                                 const standard = STANDARD_DICE_TYPES.includes(val);
-                                updateDiceEntry(pool.id, entry.id, { diceType: standard ? parseInt(val) : val }); 
-                              }} 
+                                updateDiceEntry(pool.id, entry.id, { diceType: (standard ? parseInt(val) : val) as DiceType });
+                              }}
                               className="flex-1 bg-slate-900 border border-slate-800 rounded p-1 text-[11px] text-slate-300 outline-none font-bold appearance-none px-2"
                             >
                               <optgroup label="Standard" className="bg-[#0a0f1d]">{STANDARD_DICE_TYPES.map(d => <option key={d} value={d}>D{d}</option>)}</optgroup>
@@ -463,50 +463,50 @@ const App: React.FC = () => {
                             </select>
                             <button onClick={() => removeDiceEntry(pool.id, entry.id)} className="text-slate-700 hover:text-rose-500 transition-colors shrink-0"><Minus className="w-4 h-4" /></button>
                           </div>
-                          
+
                           <div className="space-y-2 pt-1 border-t border-slate-800/40">
-                             <div className="flex items-center justify-between"><label className="text-[8px] text-slate-600 uppercase font-black tracking-widest">Threshold</label></div>
-                             <div className="flex items-center gap-2">
-                                <select 
-                                  value={entry.thresholdType} 
-                                  onChange={(e) => updateDiceEntry(pool.id, entry.id, { thresholdType: e.target.value as ThresholdType })} 
-                                  className="flex-1 bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-slate-400 outline-none font-bold"
-                                >
-                                  <option value={ThresholdType.NONE}>None</option>
-                                  {!isCustom && (
-                                    <>
-                                      <option value={ThresholdType.AT_LEAST}>&ge;</option>
-                                      <option value={ThresholdType.AT_MOST}>&le;</option>
-                                      <option value={ThresholdType.EXACTLY}>=</option>
-                                    </>
-                                  )}
-                                  <option value={ThresholdType.MATCH_ANY}>Filter</option>
-                                </select>
-                                {!isCustom && entry.thresholdType !== ThresholdType.NONE && entry.thresholdType !== ThresholdType.MATCH_ANY && (
-                                  <input 
-                                    type="text" 
-                                    value={entry.threshold} 
-                                    onChange={(e) => updateDiceEntry(pool.id, entry.id, { threshold: e.target.value })} 
-                                    className="w-10 bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-slate-300 outline-none font-bold text-center"
-                                  />
+                            <div className="flex items-center justify-between"><label className="text-[8px] text-slate-600 uppercase font-black tracking-widest">Threshold</label></div>
+                            <div className="flex items-center gap-2">
+                              <select
+                                value={entry.thresholdType}
+                                onChange={(e) => updateDiceEntry(pool.id, entry.id, { thresholdType: e.target.value as ThresholdType })}
+                                className="flex-1 bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-slate-400 outline-none font-bold"
+                              >
+                                <option value={ThresholdType.NONE}>None</option>
+                                {!isCustom && (
+                                  <>
+                                    <option value={ThresholdType.AT_LEAST}>&ge;</option>
+                                    <option value={ThresholdType.AT_MOST}>&le;</option>
+                                    <option value={ThresholdType.EXACTLY}>=</option>
+                                  </>
                                 )}
-                             </div>
-                             {(entry.thresholdType === ThresholdType.MATCH_ANY || (isCustom && entry.thresholdType !== ThresholdType.NONE)) && (
-                                <div className="p-1.5 bg-slate-900/50 rounded flex flex-wrap gap-1 max-h-24 overflow-y-auto custom-scrollbar">
-                                  {getEntryUniqueFaces(entry).map(val => {
-                                    const isSel = entry.targetValues.some(v => v.toString().trim().toUpperCase() === val.toString().trim().toUpperCase());
-                                    return (
-                                      <button 
-                                        key={val} 
-                                        onClick={() => toggleEntryTargetValue(pool.id, entry.id, val)} 
-                                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold border transition-all ${isSel ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-glow-blue' : 'bg-slate-950 border-slate-800 text-slate-600 hover:border-slate-600'}`}
-                                      >
-                                        {val}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                             )}
+                                <option value={ThresholdType.MATCH_ANY}>Filter</option>
+                              </select>
+                              {!isCustom && entry.thresholdType !== ThresholdType.NONE && entry.thresholdType !== ThresholdType.MATCH_ANY && (
+                                <input
+                                  type="text"
+                                  value={entry.threshold}
+                                  onChange={(e) => updateDiceEntry(pool.id, entry.id, { threshold: e.target.value })}
+                                  className="w-10 bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-slate-300 outline-none font-bold text-center"
+                                />
+                              )}
+                            </div>
+                            {(entry.thresholdType === ThresholdType.MATCH_ANY || (isCustom && entry.thresholdType !== ThresholdType.NONE)) && (
+                              <div className="p-1.5 bg-slate-900/50 rounded flex flex-wrap gap-1 max-h-24 overflow-y-auto custom-scrollbar">
+                                {getEntryUniqueFaces(entry).map(val => {
+                                  const isSel = entry.targetValues.some(v => v.toString().trim().toUpperCase() === val.toString().trim().toUpperCase());
+                                  return (
+                                    <button
+                                      key={val}
+                                      onClick={() => toggleEntryTargetValue(pool.id, entry.id, val)}
+                                      className={`px-1.5 py-0.5 rounded text-[9px] font-bold border transition-all ${isSel ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-glow-blue' : 'bg-slate-950 border-slate-800 text-slate-600 hover:border-slate-600'}`}
+                                    >
+                                      {val}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex gap-1.5 flex-wrap items-center pt-1">
@@ -526,11 +526,11 @@ const App: React.FC = () => {
 
         {/* Resize Handle */}
         {isSidebarOpen && (
-          <div 
+          <div
             onMouseDown={startResizing}
             className="resize-handle absolute top-0 -right-1 w-2.5 h-full cursor-col-resize z-50 flex items-center justify-center transition-colors hover:bg-blue-600/50"
           >
-             <div className="w-0.5 h-12 bg-slate-700 rounded-full" />
+            <div className="w-0.5 h-12 bg-slate-700 rounded-full" />
           </div>
         )}
       </aside>
@@ -540,12 +540,12 @@ const App: React.FC = () => {
           <div className="absolute top-0 right-0 w-[400px] h-full bg-[#0f172a] shadow-2xl z-50 border-l border-slate-800 p-8 flex flex-col animate-in slide-in-from-right duration-300">
             <div className="flex items-center justify-between mb-6"><div className="flex items-center gap-3 text-blue-500"><Settings2 className="w-6 h-6" /><h3 className="text-[12px] font-black uppercase tracking-widest text-slate-100">Asset Forge</h3></div><button onClick={() => setEditingCustomDieId(null)} className="p-1.5 hover:bg-slate-800 rounded-full text-slate-500 transition-colors"><X className="w-6 h-6" /></button></div>
             <div className="space-y-8 flex-1 overflow-y-auto custom-scrollbar pr-2">
-              <div className="space-y-2"><label className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Name</label><input value={editingCustomDie.name} onChange={(e) => updateCustomDie(editingCustomDie.id, { name: e.target.value })} className="w-full bg-[#0a0f1d] border border-slate-800 rounded-lg p-3 text-[13px] text-slate-100 outline-none font-bold focus:border-blue-500 transition-colors"/></div>
+              <div className="space-y-2"><label className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Name</label><input value={editingCustomDie.name} onChange={(e) => updateCustomDie(editingCustomDie.id, { name: e.target.value })} className="w-full bg-[#0a0f1d] border border-slate-800 rounded-lg p-3 text-[13px] text-slate-100 outline-none font-bold focus:border-blue-500 transition-colors" /></div>
               <div className="space-y-3"><label className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Die Color</label><div className="flex flex-wrap gap-2">{PRESET_COLORS.map(color => (<button key={color} onClick={() => updateCustomDie(editingCustomDie.id, { color })} className={`w-8 h-8 rounded-full border-2 transition-all ${editingCustomDie.color === color ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-40 hover:opacity-80'}`} style={{ backgroundColor: color }} />))}</div></div>
               <div className="space-y-5">
                 <div className="flex items-center justify-between mb-1"><label className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Face Values</label><div className="flex gap-1.5"><button onClick={() => applyTemplate(editingCustomDie.id, 'numbers')} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-[9px] font-black uppercase text-slate-400 rounded-full transition-colors">D6 Std</button><button onClick={() => applyTemplate(editingCustomDie.id, 'binary')} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-[9px] font-black uppercase text-slate-400 rounded-full transition-colors">Binary</button></div></div>
                 <div className="space-y-2">{editingCustomDie.sides.map((side, idx) => (
-                  <div key={side.id} className="flex items-center gap-3 group/side"><div className="w-8 h-8 bg-slate-900 border border-slate-800 rounded flex items-center justify-center font-mono text-[10px] text-slate-600 font-black shrink-0">{idx + 1}</div><input value={side.content} onChange={(e) => updateSideContent(editingCustomDie.id, side.id, e.target.value)} className="flex-1 bg-[#0a0f1d] border border-slate-800 rounded-md p-2 text-[13px] text-slate-300 outline-none font-bold focus:border-blue-500"/><button onClick={() => removeSideFromDie(editingCustomDie.id, side.id)} className="opacity-0 group-hover/side:opacity-100 p-1.5 text-slate-700 hover:text-rose-500 transition-all"><Trash2 className="w-5 h-5" /></button></div>
+                  <div key={side.id} className="flex items-center gap-3 group/side"><div className="w-8 h-8 bg-slate-900 border border-slate-800 rounded flex items-center justify-center font-mono text-[10px] text-slate-600 font-black shrink-0">{idx + 1}</div><input value={side.content} onChange={(e) => updateSideContent(editingCustomDie.id, side.id, e.target.value)} className="flex-1 bg-[#0a0f1d] border border-slate-800 rounded-md p-2 text-[13px] text-slate-300 outline-none font-bold focus:border-blue-500" /><button onClick={() => removeSideFromDie(editingCustomDie.id, side.id)} className="opacity-0 group-hover/side:opacity-100 p-1.5 text-slate-700 hover:text-rose-500 transition-all"><Trash2 className="w-5 h-5" /></button></div>
                 ))}<button onClick={() => addSideToDie(editingCustomDie.id)} className="w-full py-3.5 border-2 border-dashed border-slate-800 rounded-lg flex items-center justify-center gap-2 text-slate-600 hover:text-blue-500 hover:border-blue-500 uppercase font-black text-[10px] transition-all">+ Add Face</button></div>
               </div>
             </div>
@@ -581,12 +581,12 @@ const App: React.FC = () => {
                 const poolSum = pool.results.reduce((acc, r) => acc + (typeof r.value === 'number' ? r.value : (parseFloat(r.value as string) || 0)), 0);
                 const successCount = pool.results.filter(r => r.isSuccess).length;
                 const isHistCollapsed = collapsedPoolHistories[pool.id] ?? true;
-                
+
                 return (
                   <div key={pool.id} className={`flex flex-col bg-slate-900/40 border-2 border-slate-800 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${pool.mode === PoolMode.BLIND_BAG ? 'border-purple-900/40 shadow-purple-950/20' : 'shadow-slate-950/40'}`}>
                     <div className="p-5 border-b-2 border-slate-800/50 bg-slate-950/20 flex items-center justify-between gap-5">
                       <div className="flex-1 min-w-0">
-                        <input value={pool.name} onChange={(e) => updatePool(pool.id, { name: e.target.value })} className="bg-transparent font-black text-xl text-slate-100 outline-none w-full uppercase truncate focus:text-blue-400 transition-colors"/>
+                        <input value={pool.name} onChange={(e) => updatePool(pool.id, { name: e.target.value })} className="bg-transparent font-black text-xl text-slate-100 outline-none w-full uppercase truncate focus:text-blue-400 transition-colors" />
                         <div className="mt-2.5 flex gap-2.5"><span className="bg-blue-600/10 text-blue-400 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-blue-600/20 shadow-sm">CMP: {pool.entries.length}</span></div>
                       </div>
                       <div className="flex items-center gap-5 shrink-0">
@@ -597,7 +597,7 @@ const App: React.FC = () => {
                         <button onClick={() => rollPool(pool.id)} className={`w-16 h-16 rounded-2xl flex items-center justify-center active:scale-90 group/roll shadow-2xl transition-all ${pool.mode === PoolMode.BLIND_BAG ? 'bg-purple-600 hover:bg-purple-500' : 'bg-blue-600 hover:bg-blue-500'} text-white`}><RefreshCw className="w-8 h-8 group-active/roll:rotate-180 transition-transform duration-500" /></button>
                       </div>
                     </div>
-                    
+
                     <div className="p-6 flex-1 bg-slate-950/30 min-h-[160px] flex items-center justify-center">
                       <div className="flex flex-wrap gap-3.5 justify-center max-w-full">
                         {pool.results.length > 0 ? pool.results.map((res, idx) => (
@@ -620,7 +620,7 @@ const App: React.FC = () => {
                         </div>
                         <div className="flex gap-4 items-center">
                           {pool.mode === PoolMode.BLIND_BAG && <button onClick={() => resetBag(pool.id)} className="text-purple-400 hover:text-purple-300 uppercase flex items-center gap-2 transition-colors"><RotateCcw className="w-3.5 h-3.5" /> Refill</button>}
-                          <button onClick={() => togglePoolHistory(pool.id)} className="hover:text-white flex items-center gap-2.5 transition-colors">Logs ({pool.history.length}) {isHistCollapsed ? <ChevronDown className="w-4 h-4"/> : <ChevronUp className="w-4 h-4"/>}</button>
+                          <button onClick={() => togglePoolHistory(pool.id)} className="hover:text-white flex items-center gap-2.5 transition-colors">Logs ({pool.history.length}) {isHistCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}</button>
                         </div>
                       </div>
                       {!isHistCollapsed && pool.history.length > 0 && (
@@ -643,7 +643,7 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
-        
+
         <footer className="p-4 bg-slate-950 border-t border-slate-800 text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 flex justify-between items-center shrink-0">
           <div className="flex gap-12"><span>FLEET_BRIDGE_ACTIVE</span><span>CHROMA_SYNC_ESTABLISHED</span></div>
           <div className="flex items-center gap-5"><span className="opacity-20 font-mono">STB_V5.1_DEPLOY</span><span className="font-mono text-slate-800 tracking-normal">TACTICIAN_IO</span></div>

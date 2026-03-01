@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DiceType } from '../types.ts';
+import { DiceType } from '../types';
 
 interface DiceIconProps {
   type: DiceType | string;
@@ -12,8 +12,8 @@ interface DiceIconProps {
 
 const DiceIcon: React.FC<DiceIconProps> = ({ type, value, isSuccess, size = 'md', color }) => {
   // A die is custom if its type is an ID (string) and not a standard numeric string
-  const isCustom = typeof type === 'string' && !['2','4','6','8','10','12','20'].includes(type);
-  
+  const isCustom = typeof type === 'string' && !['2', '4', '6', '8', '10', '12', '20'].includes(type);
+
   const baseClasses = "relative flex items-center justify-center font-bold transition-all duration-300 transform hover:scale-110 overflow-hidden text-center leading-tight shadow-xl";
   const sizeClasses = {
     sm: "w-10 h-10 text-[10px] border-2",
@@ -28,7 +28,7 @@ const DiceIcon: React.FC<DiceIconProps> = ({ type, value, isSuccess, size = 'md'
     // Determine text color based on success status for colored/custom dice
     let textColor = '#fff';
     let bgClass = "bg-slate-900/90";
-    
+
     if (isSuccess === true) {
       textColor = '#34d399'; // emerald-400
       bgClass = "bg-emerald-950/30";
@@ -46,13 +46,13 @@ const DiceIcon: React.FC<DiceIconProps> = ({ type, value, isSuccess, size = 'md'
     };
   } else {
     // Standard dice styling (no custom color provided)
-    statusClasses = value !== undefined 
+    statusClasses = value !== undefined
       ? (isSuccess === undefined
-          ? "bg-slate-800/80 border-slate-600 text-slate-100" 
-          : (isSuccess 
-              ? "bg-emerald-950/80 border-emerald-500 text-emerald-300" 
-              : "bg-rose-950/80 border-rose-500 text-rose-300 opacity-70")
-        )
+        ? "bg-slate-800/80 border-slate-600 text-slate-100"
+        : (isSuccess
+          ? "bg-emerald-950/80 border-emerald-500 text-emerald-300"
+          : "bg-rose-950/80 border-rose-500 text-rose-300 opacity-70")
+      )
       : "bg-slate-900/50 border-slate-800 text-slate-700";
   }
 
@@ -79,17 +79,17 @@ const DiceIcon: React.FC<DiceIconProps> = ({ type, value, isSuccess, size = 'md'
   const isLong = displayValue.length > 3;
 
   return (
-    <div 
+    <div
       className={`${baseClasses} ${sizeClasses[size]} ${statusClasses}`}
       style={style}
     >
       {/* Subtle shine effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-      
+
       <span className="mono relative z-10 p-1 break-words w-full" style={isLong ? { fontSize: '0.8em', lineHeight: '1.1' } : {}}>
         {displayValue}
       </span>
-      
+
       {/* Optional success/failure indicator pulse */}
       {isSuccess !== undefined && color && (
         <div className={`absolute inset-0 animate-pulse pointer-events-none opacity-20 ${isSuccess ? 'bg-emerald-400' : 'bg-rose-400'}`} />
