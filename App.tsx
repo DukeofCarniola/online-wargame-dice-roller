@@ -228,6 +228,13 @@ const App: React.FC = () => {
       return { ...p, entries: updatedEntries };
     }));
   };
+  const updateBagDefinition = (poolId: string, color: string, qty: number) => {
+    setPools(prev => prev.map(p => {
+      if (p.id !== poolId) return p;
+      const newDef = { ...p.bagDefinition, [color]: Math.max(0, qty) };
+      return { ...p, bagDefinition: newDef };
+    }));
+  };
 
   const addCustomDie = () => {
     const newDie: CustomDieDefinition = {
