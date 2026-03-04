@@ -158,7 +158,7 @@ const App: React.FC = () => {
       lastRolledAt: null,
       history: [],
       availableColors: [...PRESET_COLORS],
-      bagDefinition: PRESET_COLORS.reduce((acc, color) => ({ ...acc, [color]: 5 }), {}),
+      bagDefinition: PRESET_COLORS.reduce((acc, color) => ({ ...acc, [color]: 0 }), {}),
       currentBag: []
     };
     if (mode === PoolMode.BLIND_BAG) {
@@ -341,25 +341,31 @@ const App: React.FC = () => {
           }
         });
       } else {
-        const totalToPull = pool.entries.reduce((acc, e) => acc + e.count, 0);
-        const pullCount = Math.min(totalToPull, workingBag.length);
-        const entryTemplate = pool.entries[0];
-        const customDie = customDice.find(d => d.id === entryTemplate.diceType);
+        const diceToPull: DiceEntry[] = [];
+        pool.entries.forEach(entry => {
+          for (let i = 0; i < entry.count; i++) {
+            diceToPull.push(entry);
+          }
+        });
+        const pullCount = Math.min(diceToPull.length, workingBag.length);
 
         for (let i = 0; i < pullCount; i++) {
           const colorIdx = Math.floor(Math.random() * workingBag.length);
           const color = workingBag[colorIdx];
           workingBag.splice(colorIdx, 1);
 
+          const currentEntry = diceToPull[i];
+          const customDie = customDice.find(d => d.id === currentEntry.diceType);
+
           let value: number | string;
           if (customDie) {
             value = customDie.sides[Math.floor(Math.random() * customDie.sides.length)].content;
           } else {
-            const diceSides = typeof entryTemplate.diceType === 'number' ? entryTemplate.diceType : parseInt(entryTemplate.diceType as string);
+            const diceSides = typeof currentEntry.diceType === 'number' ? currentEntry.diceType : parseInt(currentEntry.diceType as string);
             value = Math.floor(Math.random() * (isNaN(diceSides) ? 6 : diceSides)) + 1;
           }
-          const isSuccess = calculateIsSuccess(value, entryTemplate);
-          newResults.push({ value, isSuccess, color, isCustom: !!customDie, diceType: entryTemplate.diceType });
+          const isSuccess = calculateIsSuccess(value, currentEntry);
+          newResults.push({ value, isSuccess, color, isCustom: !!customDie, diceType: currentEntry.diceType });
         }
       }
 
@@ -603,7 +609,7 @@ const App: React.FC = () => {
           )}
 
           {pools.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-slate-800 opacity-20"><Dice5 className="w-40 h-40 stroke-[0.3]" /><h3 className="text-[14px] font-black uppercase tracking-[0.4em] mt-8 text-slate-500">Fleet At Standby</h3></div>
+            <div className="h-full flex flex-col items-center justify-center text-slate-800 opacity-20"><Dice5 className="w-40 h-40 stroke-[0.3]" /></div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 pb-20">
               {pools.map(pool => {
@@ -680,7 +686,7 @@ const App: React.FC = () => {
         </div>
 
         <footer className="p-4 bg-slate-950 border-t border-slate-800 text-[10px] font-black uppercase tracking-[0.4em] text-slate-700 flex justify-between items-center shrink-0">
-          <div className="flex gap-12"><span>FLEET_BRIDGE_ACTIVE</span><span>CHROMA_SYNC_ESTABLISHED</span></div>
+          <div className="flex gap-12"></div>
           <div className="flex items-center gap-5"><span className="opacity-20 font-mono">STB_V5.1_DEPLOY</span><span className="font-mono text-slate-800 tracking-normal">TACTICIAN_IO</span></div>
         </footer>
       </main>
