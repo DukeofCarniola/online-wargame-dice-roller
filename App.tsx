@@ -41,7 +41,7 @@ const PRESET_COLORS = [
 ];
 
 const STANDARD_DICE_TYPES = ['2', '4', '6', '8', '10', '12', '20'];
-const DEFAULT_POOL_NAME = "Combat Pool";
+const DEFAULT_POOL_NAME = "Dice Pool";
 const MIN_SIDEBAR_WIDTH = 250;
 const MAX_SIDEBAR_WIDTH = 650;
 
@@ -239,7 +239,7 @@ const App: React.FC = () => {
   const addCustomDie = () => {
     const newDie: CustomDieDefinition = {
       id: generateId(),
-      name: "Asset " + (customDice.length + 1),
+      name: "Custom Die " + (customDice.length + 1),
       color: PRESET_COLORS[customDice.length % PRESET_COLORS.length],
       sides: Array.from({ length: 6 }, (_, i) => ({ id: generateId(), content: (i + 1).toString() }))
     };
@@ -423,7 +423,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-6 min-w-full custom-scrollbar">
           <section>
             <div className="flex items-center justify-between mb-2 px-1">
-              <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Assets</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Custom Dice</h2>
               <button onClick={addCustomDie} className="p-1 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-600/30 rounded-md"><Plus className="w-4 h-4" /></button>
             </div>
             <div className="space-y-1.5">
@@ -472,7 +472,7 @@ const App: React.FC = () => {
                               className="flex-1 bg-slate-900 border border-slate-800 rounded p-1 text-[11px] text-slate-300 outline-none font-bold appearance-none px-2"
                             >
                               <optgroup label="Standard" className="bg-[#0a0f1d]">{STANDARD_DICE_TYPES.map(d => <option key={d} value={d}>D{d}</option>)}</optgroup>
-                              {customDice.length > 0 && <optgroup label="Assets" className="bg-[#0a0f1d]">{customDice.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</optgroup>}
+                              {customDice.length > 0 && <optgroup label="Custom Dice" className="bg-[#0a0f1d]">{customDice.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</optgroup>}
                             </select>
                             <button onClick={() => removeDiceEntry(pool.id, entry.id)} className="text-slate-700 hover:text-rose-500 transition-colors shrink-0"><Minus className="w-4 h-4" /></button>
                           </div>
@@ -573,7 +573,7 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col relative overflow-hidden bg-[radial-gradient(circle_at_center,_#1e293b_0%,_#0a0f1d_100%)]">
         {editingCustomDie && (
           <div className="absolute top-0 right-0 w-[400px] h-full bg-[#0f172a] shadow-2xl z-50 border-l border-slate-800 p-8 flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="flex items-center justify-between mb-6"><div className="flex items-center gap-3 text-blue-500"><Settings2 className="w-6 h-6" /><h3 className="text-[12px] font-black uppercase tracking-widest text-slate-100">Asset Forge</h3></div><button onClick={() => setEditingCustomDieId(null)} className="p-1.5 hover:bg-slate-800 rounded-full text-slate-500 transition-colors"><X className="w-6 h-6" /></button></div>
+            <div className="flex items-center justify-between mb-6"><div className="flex items-center gap-3 text-blue-500"><Settings2 className="w-6 h-6" /><h3 className="text-[12px] font-black uppercase tracking-widest text-slate-100">Custom Dice Forge</h3></div><button onClick={() => setEditingCustomDieId(null)} className="p-1.5 hover:bg-slate-800 rounded-full text-slate-500 transition-colors"><X className="w-6 h-6" /></button></div>
             <div className="space-y-8 flex-1 overflow-y-auto custom-scrollbar pr-2">
               <div className="space-y-2"><label className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Name</label><input value={editingCustomDie.name} onChange={(e) => updateCustomDie(editingCustomDie.id, { name: e.target.value })} className="w-full bg-[#0a0f1d] border border-slate-800 rounded-lg p-3 text-[13px] text-slate-100 outline-none font-bold focus:border-blue-500 transition-colors" /></div>
               <div className="space-y-3"><label className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Die Color</label><div className="flex flex-wrap gap-2">{PRESET_COLORS.map(color => (<button key={color} onClick={() => updateCustomDie(editingCustomDie.id, { color })} className={`w-8 h-8 rounded-full border-2 transition-all ${editingCustomDie.color === color ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-40 hover:opacity-80'}`} style={{ backgroundColor: color }} />))}</div></div>
@@ -584,7 +584,7 @@ const App: React.FC = () => {
                 ))}<button onClick={() => addSideToDie(editingCustomDie.id)} className="w-full py-3.5 border-2 border-dashed border-slate-800 rounded-lg flex items-center justify-center gap-2 text-slate-600 hover:text-blue-500 hover:border-blue-500 uppercase font-black text-[10px] transition-all">+ Add Face</button></div>
               </div>
             </div>
-            <button onClick={() => setEditingCustomDieId(null)} className="mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-[12px] uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95"><Save className="w-5 h-5" /> Finalize Asset</button>
+            <button onClick={() => setEditingCustomDieId(null)} className="mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-[12px] uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95"><Save className="w-5 h-5" /> Finalize Custom Die</button>
           </div>
         )}
 
