@@ -6,7 +6,6 @@ import {
   RotateCcw,
   Dices,
   RefreshCw,
-  LayoutGrid,
   Menu,
   ChevronLeft,
   ChevronDown,
@@ -14,7 +13,6 @@ import {
   History,
   Clock,
   Eraser,
-  PackageOpen,
   Minus,
   Settings2,
   X,
@@ -25,6 +23,26 @@ import {
 } from 'lucide-react';
 import { DiceType, ThresholdType, PoolMode, DicePool, RollResult, RollEvent, CustomDieDefinition, CustomDieSide, DiceEntry } from './types';
 import DiceIcon from './components/DiceIcon';
+
+const PouchIcon = (props: React.ComponentProps<'svg'>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M7 8C7 5 9 4 12 4S17 5 17 8C17 14 19 17 19 20C19 21 17 22 12 22S5 21 5 20C5 17 7 14 7 8Z" />
+    <path d="M5.5 10h13" />
+    <path d="M9 4l1-2" />
+    <path d="M15 4l-1-2" />
+  </svg>
+);
 
 const generateId = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -443,8 +461,8 @@ const App: React.FC = () => {
             <div className="flex items-center justify-between mb-2 px-1">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Deployments</h2>
               <div className="flex gap-1.5">
-                <button onClick={() => addPool(PoolMode.STANDARD)} className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-md" title="Standard Pool"><LayoutGrid className="w-4 h-4" /></button>
-                <button onClick={() => addPool(PoolMode.BLIND_BAG)} className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-md" title="Blind Bag Pool"><PackageOpen className="w-4 h-4" /></button>
+                <button onClick={() => addPool(PoolMode.STANDARD)} className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-md" title="Standard Pool"><Dices className="w-4 h-4" /></button>
+                <button onClick={() => addPool(PoolMode.BLIND_BAG)} className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-md" title="Blind Bag Pool"><PouchIcon className="w-4 h-4" /></button>
               </div>
             </div>
             <div className="space-y-4">
